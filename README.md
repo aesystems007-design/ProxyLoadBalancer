@@ -39,7 +39,9 @@ YARP's built-in active health monitor is disabled. These probes are the only act
 
 ## Configuration
 
-The first start copies `ReverseProxy` from `src/LoadBalancer.Proxy/appsettings.json` into `src/LoadBalancer.Proxy/App_Data/proxy.db`. After that, the database is the configuration that loads and reloads. `App_Data/` is not committed.
+`Proxy:ConfigStore` selects where that document is stored. `Sqlite` is the default. The first start copies `ReverseProxy` from `src/LoadBalancer.Proxy/appsettings.json` into `src/LoadBalancer.Proxy/App_Data/proxy.db`. After that, the database is the configuration that loads and reloads. `App_Data/` is not committed.
+
+`SqlServer` reads `ConnectionStrings:Proxy` and uses `SqlServerProxyConfigStore`. That class is a stub: implement `EnsureReady`, `Read`, `Insert`, and `UpdateApplications` against one `proxy_config` row. The table script is `SqlServerProxyConfigStore.TableSql`. Routing and the dashboard stay the same. Another proxy process using that database does not pick up saves until it restarts.
 
 The seeded cluster is one application named `app`, listening on any host, with destinations `http://localhost:8081/` and `http://localhost:8082/`. Replace those with the IIS sites, or other HTTP servers, you want to balance. Delete `proxy.db` and its `-wal` and `-shm` files to seed again from `appsettings.json`.
 

@@ -8,6 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSingleton<HealthProbeSignal>();
 builder.Services.AddSingleton<IActiveHealthCheckMonitor, DisabledActiveHealthCheckMonitor>();
+builder.Services.AddProxyConfigStore();
 builder.Services.AddSingleton<DestinationCatalog>();
 builder.Services.AddSingleton<IProxyConfigProvider>(services => services.GetRequiredService<DestinationCatalog>().ConfigProvider);
 builder.Services.AddReverseProxy();

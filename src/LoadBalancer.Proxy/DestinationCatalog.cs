@@ -12,7 +12,7 @@ public sealed class DestinationCatalog
     private readonly object _gate = new();
     private readonly ILogger<DestinationCatalog> _logger;
     private readonly HealthProbeSignal _probeSignal;
-    private readonly ProxyConfigStore _store;
+    private readonly IProxyConfigStore _store;
     private readonly Dictionary<string, HealthObservation> _health = new(StringComparer.OrdinalIgnoreCase);
     private readonly ClusterConfig _template;
     private readonly InMemoryConfigProvider _configProvider;
@@ -20,13 +20,13 @@ public sealed class DestinationCatalog
 
     public DestinationCatalog(
         IConfiguration configuration,
-        IHostEnvironment environment,
+        IProxyConfigStore store,
         HealthProbeSignal probeSignal,
         ILogger<DestinationCatalog> logger)
     {
         _logger = logger;
         _probeSignal = probeSignal;
-        _store = new ProxyConfigStore(environment.ContentRootPath);
+        _store = store;
         var stored = _store.LoadOrCreate(configuration, logger);
         var clusters = ParseClusters(stored.ClustersJson);
         _template = clusters.FirstOrDefault(cluster =>
